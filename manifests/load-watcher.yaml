@@ -1,43 +1,17 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: trimaran
+  name: load-watcher
   namespace: kube-system
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: trimaran-as-kube-scheduler
-subjects:
-- kind: ServiceAccount
-  name: trimaran
-  namespace: kube-system
-roleRef:
-  kind: ClusterRole
-  name: system:kube-scheduler
-  apiGroup: rbac.authorization.k8s.io
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: trimaran-as-volume-scheduler
-subjects:
-- kind: ServiceAccount
-  name: trimaran
-  namespace: kube-system
-roleRef:
-  kind: ClusterRole
-  name: system:volume-scheduler
-  apiGroup: rbac.authorization.k8s.io
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: trimaran-extension-apiserver
+  name: load-watcher-extension-apiserver
   namespace: kube-system
 subjects:
 - kind: ServiceAccount
-  name: trimaran
+  name: load-watcher
   namespace: kube-system
 roleRef:
   kind: Role
@@ -50,7 +24,7 @@ metadata:
   labels:
     component: scheduler
     tier: control-plane
-  name: trimaran
+  name: load-watcher
   namespace: kube-system
 spec:
   selector:
@@ -65,7 +39,7 @@ spec:
         tier: control-plane
         version: second
     spec:
-      serviceAccountName: trimaran
+      serviceAccountName: load-watcher
       hostNetwork: true
       containers:
       - name: load-watcher
@@ -73,13 +47,17 @@ spec:
         - /bin/load-watcher
         image: quay.io/husky_parul/load-watcher:latest
         imagePullPolicy: Always
+        volumeMounts: 
+        - mountPath: /etc/kubernetes/
+          name: shared
         env:
         - name: METRICS_PROVIDER_NAME
           value: "Prometheus"
         - name: METRICS_PROVIDER_ADDRESS
-          value: "http://localhost:9090"
+          value: "http://prometheus-k8s.monitoring.svc.cluster.local:9090"
       volumes:
       - name: shared
         hostPath:
-          path: /tmp
+          path: /etc/kubernetes/
           type: Directory
+
