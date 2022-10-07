@@ -1,0 +1,61 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: scheduler-config
+  namespace: kube-system
+data:
+  scheduler-config.yaml: |
+    apiVersion: kubescheduler.config.k8s.io/v1beta1
+    kind: KubeSchedulerConfiguration
+    leaderElection:
+      leaderElect: false
+    profiles:
+    - schedulerName: Peaks
+      plugins:
+        queueSort:
+          enabled:
+            - name: "Peaks"
+          disabled:
+            - name: "*"
+        permit:
+          enabled:
+          - name: "Peaks"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: peaks
+  namespace: kube-system
+  labels:
+    component: peaks
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: peaks
+  template:
+    metadata:
+      labels:
+        component: peaks
+    spec:
+      serviceAccount: peaks-sa
+      priorityClassName: system-cluster-critical
+      volumes:
+      - name: scheduler-config
+        configMap:
+          name: scheduler-config
+      containers:
+      - name: scheduler-ctrl
+        image: quay.io/husky_parul/peaks:sa
+        imagePullPolicy: Always
+        args:
+        - /usr/bin/peaks
+        - --config=/scheduler/scheduler-config.yaml
+        - --v=3
+        resources:
+          requests:
+            cpu: "50m"
+        volumeMounts:
+        - name: scheduler-config
+          mountPath: /scheduler
