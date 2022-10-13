@@ -33,13 +33,13 @@ function _deploy_kepler() {
     rm -rf kepler/
 }
 
-function _deploy_trimaran(){
-    oc apply -f manifests/deployment.yaml;
+function _deploy_carbon_intensity_exporter(){
+    oc apply -f manifests/carbon-intensity-exporter.yaml;
 
 }
 
 
 
 _deploy_prometheus_operator;
-_deploy_kepler
-_deploy_trimaran
+_deploy_kepler;
+_deploy_carbon_intensity_exporter;
