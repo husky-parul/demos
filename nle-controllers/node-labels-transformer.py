@@ -15,7 +15,7 @@ class NodeLabelsUpdater():
 
         
         for i in node_map:
-            for key, value in i:
+            for key, value in i.items():
                 body = {
                     "metadata": {
                     "labels": {
@@ -24,7 +24,7 @@ class NodeLabelsUpdater():
                    }
                 }
                 api_response = api_instance.patch_node(key, body)
-                pprint(api_response)
+                print(api_response)
 
 if __name__ == '__main__':
     obj = NodeLabelsUpdater()
