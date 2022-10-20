@@ -1,13 +1,8 @@
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: carbon-intensity-exporter
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: cie-dk
-  namespace: carbon-intensity-exporter
+  namespace: kepler-edge
 spec:
   selector:
     matchLabels:
@@ -43,12 +38,11 @@ spec:
             fieldRef:
               fieldPath: spec.nodeName
 ---
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: cie-gb
-  namespace: carbon-intensity-exporter
+  namespace: kepler-edge
 spec:
   selector:
     matchLabels:
@@ -88,7 +82,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: carbon-intensity-exporter-dk
-  namespace: carbon-intensity-exporter
+  namespace: kepler-edge
   labels:
     app.kubernetes.io/component: carbon-intensity-exporter
     app.kubernetes.io/name: cie-dk
@@ -105,7 +99,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: carbon-intensity-exporter-gb
-  namespace: carbon-intensity-exporter
+  namespace: kepler-edge
   labels:
     app.kubernetes.io/component: carbon-intensity-exporter
     app.kubernetes.io/name: cie-gb
@@ -125,7 +119,7 @@ metadata:
     app.kubernetes.io/component: carbon-intensity-exporter
     app.kubernetes.io/name: carbon-intensity-exporter
   name: carbon-intensity-exporter
-  namespace: carbon-intensity-exporter
+  namespace: kepler-edge
 spec:
   endpoints:
   - interval: 3s
@@ -143,14 +137,13 @@ spec:
     matchLabels:
       app.kubernetes.io/component: carbon-intensity-exporter
       # app.kubernetes.io/name: cie-dk
----
 # clusterrole prometheus-k8s comes from kube-prometheus 
 ---
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: prometheus-k8s
-  namespace: carbon-intensity-exporter
+  namespace: kepler-edge
   labels:
     app.kubernetes.io/component: prometheus
     app.kubernetes.io/instance: k8s
@@ -187,7 +180,7 @@ kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: prometheus-k8s
-  namespace: carbon-intensity-exporter
+  namespace: kepler-edge
   labels:
     app.kubernetes.io/component: prometheus
     app.kubernetes.io/instance: k8s
