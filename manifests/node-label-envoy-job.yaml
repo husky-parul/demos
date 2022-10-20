@@ -1,18 +1,34 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: hello
+  name: nle-cron
+  namespace: carbon-intensity-exporter
 spec:
-  schedule: "* * * * *"
+  schedule: "*/2 * * * *"
   jobTemplate:
     spec:
       template:
         spec:
-          containers:
+          initContainers:
           - name: nle
             image: quay.io/husky_parul/nle:latest
             imagePullPolicy: IfNotPresent
             command:
             - python3
-            - /app/node-label-envoy.py
-          restartPolicy: OnFailure
+            - /app/node-labels-envoy.py
+          containers:
+          - name: nlt
+            image: quay.io/husky_parul/nle:latest
+            imagePullPolicy: IfNotPresent
+            command: 
+            - python3
+            - /app/node-labels-transformer.py
+            volumeMounts:
+            - name: kubeconfig
+              mountPath: /home/.kube/config
+          volumes:
+            - name: kubeconfig
+              hostPath:
+                path: /root/.kube/config
+              restartPolicy: OnFailure
+
