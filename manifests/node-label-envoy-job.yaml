@@ -4,25 +4,29 @@ metadata:
   name: nle-cron
   namespace: carbon-intensity-exporter
 spec:
-  schedule: "*/2 * * * *"
+  schedule: "*/1 * * * *"
   jobTemplate:
     spec:
       template:
         spec:
+          hostNetwork: true
           initContainers:
           - name: nle
             image: quay.io/husky_parul/nle:latest
-            imagePullPolicy: IfNotPresent
+            imagePullPolicy: Always
             command:
             - python3
             - /app/node-labels-envoy.py
           containers:
           - name: nlt
             image: quay.io/husky_parul/nle:latest
-            imagePullPolicy: IfNotPresent
+            imagePullPolicy: Always
             command: 
             - python3
             - /app/node-labels-transformer.py
+            env:
+            - name : "KUBECONFIG"
+              value: /home/.kube/config
             volumeMounts:
             - name: kubeconfig
               mountPath: /home/.kube/config
@@ -30,5 +34,5 @@ spec:
             - name: kubeconfig
               hostPath:
                 path: /root/.kube/config
-              restartPolicy: OnFailure
+          restartPolicy: OnFailure
 

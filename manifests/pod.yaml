@@ -1,12 +1,13 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: peaks-test-pod
-  namespace: kube-system
-  labels:
-    name: Peaks
+  name: ci-test-pod
+  namespace: carbon-intensity-exporter
 spec:
-  schedulerName: Peaks
+  nodeSelector:
+    carbon_intensity: green
   containers:
-  - name: peaks-test-pod
-    image: registry.k8s.io/pause:2.0
+  - name: nginx
+    image: nginx:1.14.2
+    ports:
+    - containerPort: 80

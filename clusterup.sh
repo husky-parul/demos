@@ -35,6 +35,7 @@ function _deploy_kepler() {
 
 function _deploy_carbon_intensity_exporter(){
     oc apply -f manifests/carbon-intensity-exporter.yaml;
+    oc apply -f manifests/node-label-envoy-job.yaml;
 
 }
 
