@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: ci-test-pod
-  namespace: carbon-intensity-exporter
+  namespace: kepler-edge
 spec:
   nodeSelector:
     carbon_intensity: green
